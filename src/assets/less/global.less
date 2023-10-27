@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.p-input-icon-left > .p-inputtext {
+    padding-left: 2.5rem !important;
+}
+
+.p-inputtext {
+    font-family: var(--font-family);
+    font-feature-settings: var(--font-feature-settings, normal);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.87);
+    background: #1d1e27;
+    padding: 0.75rem 0.75rem !important;
+    border: 1px solid #3e4053;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 6px;
+}

@@ -1,7 +1,7 @@
 <template>
-    <div class="home flex flex-col gap-4">
+    <div class="home flex flex-col gap-4 py-4">
         <div class="container w-full flex flex-row justify-center gap-6 pb-4">
-            <p class="text-5xl font-bold tracking-tight">Phasmophobia Evidence Tracker</p>
+            <p class="text-5xl font-bold tracking-tight text-center">Phasmophobia Evidence Tracker</p>
         </div>
         <div v-if="showParams" class="container w-full flex flex-col gap-4">
             <div class="container flex flex-col gap-4">
@@ -13,15 +13,17 @@
                     </Column>
                     <Column header="State">
                         <template #body="{ data }">
-                            <InputSwitch :modelValue="data[1].value" @click="params.get(data[0]).value = !data[1].value"></InputSwitch>
+                            <InputSwitch :modelValue="data[1].value"
+                                         @click="params.get(data[0]).value = !data[1].value"></InputSwitch>
                         </template>
                     </Column>
                 </DataTable>
             </div>
         </div>
-        <div class="container w-full flex flex-row gap-6">
-            <div class="container w-1/2 flex flex-col gap-4">
-                <DataTable :value="Object.keys(evidenceNames)" tableStyle="width: 100%" :row-class="evidenceTableRowClass">
+        <div class="container w-full flex flex-col md:flex-row gap-6">
+            <div class="container w-full md:w-1/2 flex flex-col gap-4">
+                <DataTable :value="Object.keys(evidenceNames)" tableStyle="width: 100%"
+                           :row-class="evidenceTableRowClass">
                     <Column header="Evidence">
                         <template #body="{ data }">
                             <span>{{ evidenceNames[data] }}</span>
@@ -52,33 +54,52 @@
                     @click="selectedEvidences = []; ruledOutEvidences = []"
                     class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                    Clear
+                    Reset
                 </Button>
             </div>
-            <div class="container flex flex-col gap-4 w-1/2">
+            <div class="container flex flex-col gap-4 w-full md:w-1/2">
                 <p class="text-4xl font-bold tracking-tight">{{ selectedGhost.name }}</p>
                 <div class="description">
-                    <p class="text-1xl tracking-tight" v-for="descLine in selectedGhost.description" :key="descLine">{{ descLine }}</p>
+                    <p class="text-1xl tracking-tight" v-for="descLine in selectedGhost.description" :key="descLine">
+                        {{ descLine }}</p>
                 </div>
                 <p class="text-4xl font-bold tracking-tight">Strength</p>
                 <div class="strength">
-                    <p class="text-1xl tracking-tight" v-for="strengthLine in selectedGhost.strength" :key="strengthLine">{{ strengthLine }}</p>
+                    <p class="text-1xl tracking-tight" v-for="strengthLine in selectedGhost.strength"
+                       :key="strengthLine">{{ strengthLine }}</p>
                 </div>
                 <p class="text-4xl font-bold tracking-tight">Weakness</p>
                 <div class="weakness">
-                    <p class="text-1xl tracking-tight" v-for="weakLine in selectedGhost.weakness" :key="weakLine">{{ weakLine }}</p>
+                    <p class="text-1xl tracking-tight" v-for="weakLine in selectedGhost.weakness" :key="weakLine">
+                        {{ weakLine }}</p>
                 </div>
             </div>
         </div>
+        <div class="container w-full flex flex-col gap-4">
+            <span class="p-input-icon-left flex flex-row w-full">
+                <i class="pi pi-search"/>
+                <InputText
+                    :model-value="ghostNameSearch"
+                    @update:modelValue="updateGhostNameSearch"
+                    :pt="{
+                        root: { class: 'w-full' }
+                    }"
+                    placeholder="Start typing ghost name..."
+                />
+            </span>
+        </div>
         <div class="container w-full">
-            <DataTable v-model:selection="selectedGhost" selectionMode="single" dataKey="name" :metaKeySelection="false" :value="ghosts" tableStyle="width: 100%" :row-class="ghostTableRowClass">
+            <DataTable v-model:selection="selectedGhost" selectionMode="single" dataKey="name" :metaKeySelection="false"
+                       :value="ghosts" tableStyle="width: 100%" :row-class="ghostTableRowClass">
                 <Column header="Ghost">
                     <template #body="{ data }">
-                        <span v-if="params.get('useCheckIconsForGhostEvidence').value" v-tooltip.top="data.evidence.map(e => evidenceNames[e]).join('\n')">{{ data.name }}</span>
+                        <span v-if="params.get('useCheckIconsForGhostEvidence').value"
+                              v-tooltip.top="data.evidence.map(e => evidenceNames[e]).join('\n')">{{ data.name }}</span>
                         <span v-else>{{ data.name }}</span>
                     </template>
                 </Column>
-                <Column v-for="evidence in Object.keys(evidenceNames)" :key="evidence" :header="evidenceNames[evidence]">
+                <Column v-for="evidence in Object.keys(evidenceNames)" :key="evidence"
+                        :header="evidenceNames[evidence]">
                     <template #body="{ data }">
                         <i
                             v-if="params.get('useCheckIconsForGhostEvidence').value && data.evidence.includes(+evidence)"
@@ -117,22 +138,50 @@ import Column from 'primevue/column';
 import Button from "primevue/button";
 import Checkbox from 'primevue/checkbox';
 import InputSwitch from 'primevue/inputswitch';
+import InputText from "primevue/inputtext";
+import {debounce} from "@/utils/debounce";
 
 const store = useStore();
 
-const ghosts = computed<Array<IGhost>>(() => (store.getters.ghosts as Array<IGhost>).sort((a, b) => {
-    const aCondition = selectedEvidences.value.some(e => !a.evidence.includes(e)) || ruledOutEvidences.value.some(e => a.evidence.includes(e));
-    const bCondition = selectedEvidences.value.some(e => !b.evidence.includes(e)) || ruledOutEvidences.value.some(e => b.evidence.includes(e));
+const ghostNameSearch = ref("");
+const updateGhostNameSearch = debounce((ghostName: string) => {
+    ghostNameSearch.value = ghostName;
+}, 300);
 
-    if (aCondition && !bCondition) {
-        return 1; // Move ghost 'a' up
-    } else if (!aCondition && bCondition) {
-        return -1; // Move ghost 'b' up
-    } else {
-        // Both ghosts have the same number of selected evidences, sort alphabetically
-        return a.name.localeCompare(b.name);
+const showParams = computed(() => localStorage.getItem("tracker:show_config_params") == "true");
+
+const params = new Map<string, Ref<boolean>>([
+    ["useCheckIconsForGhostEvidence", ref(localStorage.getItem("tracker:useCheckIconsForGhostEvidence") == "true")],
+    ["sortGhostsByEvidenceMatch", ref(localStorage.getItem("tracker:sortGhostsByEvidenceMatch") == "true")],
+]);
+
+for (const [key, param] of params.entries()) {
+    watch(() => param.value, (v) => {
+        localStorage.setItem(`tracker:${key}`, String(v));
+    });
+}
+
+const ghosts = computed<Array<IGhost>>(() => {
+    const g = (store.getters.ghosts as Array<IGhost>).sort((a, b) => a.name.localeCompare(b.name));
+
+    if (params.get("sortGhostsByEvidenceMatch")?.value) {
+        g.sort((a, b) => {
+            const aCondition = selectedEvidences.value.some(e => !a.evidence.includes(e)) || ruledOutEvidences.value.some(e => a.evidence.includes(e)) || !a.name.toLowerCase().includes(ghostNameSearch.value.toLowerCase());
+            const bCondition = selectedEvidences.value.some(e => !b.evidence.includes(e)) || ruledOutEvidences.value.some(e => b.evidence.includes(e)) || !b.name.toLowerCase().includes(ghostNameSearch.value.toLowerCase());
+
+            if (aCondition && !bCondition) {
+                return 1; // Move ghost 'a' up
+            } else if (!aCondition && bCondition) {
+                return -1; // Move ghost 'b' up
+            } else {
+                // Both ghosts have the same number of selected evidences, sort alphabetically
+                return a.name.localeCompare(b.name);
+            }
+        });
     }
-}));
+
+    return g;
+});
 
 const ghostsBySelectedEvidence = computed(() => {
     return (store.getters.ghosts as Array<IGhost>)
@@ -162,12 +211,6 @@ const ruledOutEvidenceChange = (evidence: Evidence) => {
 const selectedGhost = ref<IGhost>(ghosts.value[0]);
 const previousSelectedGhost = ref<IGhost>(selectedGhost.value);
 
-const showParams = computed(() => localStorage.getItem("show_config_params") == "true");
-
-const params = new Map<string, Ref<boolean>>([
-    ["useCheckIconsForGhostEvidence", ref(false)],
-]);
-
 watch(() => selectedGhost.value, (ghost) => {
     if (ghost) {
         previousSelectedGhost.value = ghost;
@@ -178,7 +221,7 @@ watch(() => selectedGhost.value, (ghost) => {
 
 const ghostTableRowClass = (ghost: IGhost) => {
     return {
-        "evidence-mismatch": selectedEvidences.value.some(e => !ghost.evidence.includes(e)) || ruledOutEvidences.value.some(e => ghost.evidence.includes(e)),
+        "evidence-mismatch": selectedEvidences.value.some(e => !ghost.evidence.includes(e)) || ruledOutEvidences.value.some(e => ghost.evidence.includes(e)) || !ghost.name.toLowerCase().includes(ghostNameSearch.value.toLowerCase()),
     }
 }
 

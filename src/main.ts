@@ -11,7 +11,6 @@ import "primevue/resources/themes/soho-dark/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
-
 createApp(App)
 	.use(store)
 	.use(router)
