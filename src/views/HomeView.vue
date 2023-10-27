@@ -3,7 +3,7 @@
         <div class="container w-full flex flex-row justify-center gap-6 pb-4">
             <p class="text-5xl font-bold tracking-tight">Phasmophobia Evidence Tracker</p>
         </div>
-        <div class="container w-full flex flex-col gap-4">
+        <div v-if="showParams" class="container w-full flex flex-col gap-4">
             <div class="container flex flex-col gap-4">
                 <DataTable :value="params">
                     <Column header="Parameter">
@@ -27,19 +27,29 @@
                             <span>{{ evidenceNames[data] }}</span>
                         </template>
                     </Column>
-                    <Column header="Selected">
+                    <Column header="Confirmed">
                         <template #body="{ data }">
                             <Checkbox
                                 @change="selectedEvidenceChange(+data)"
                                 :modelValue="selectedEvidences.includes(+data)"
                                 :binary="true"
-                                :disabled="ghostsBySelectedEvidence.length && ghostsBySelectedEvidence.every(g => !g.evidence.includes(+data))"
+                                :disabled="(ghostsBySelectedEvidence.length && ghostsBySelectedEvidence.every(g => !g.evidence.includes(+data))) || ruledOutEvidences.includes(+data)"
+                            ></Checkbox>
+                        </template>
+                    </Column>
+                    <Column header="Ruled Out">
+                        <template #body="{ data }">
+                            <Checkbox
+                                @change="ruledOutEvidenceChange(+data)"
+                                :modelValue="ruledOutEvidences.includes(+data)"
+                                :binary="true"
+                                :disabled="(ghostsBySelectedEvidence.length && ghostsBySelectedEvidence.every(g => !g.evidence.includes(+data))) || selectedEvidences.includes(+data)"
                             ></Checkbox>
                         </template>
                     </Column>
                 </DataTable>
                 <Button
-                    @click="selectedEvidences = []"
+                    @click="selectedEvidences = []; ruledOutEvidences = []"
                     class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                     Clear
@@ -111,23 +121,28 @@ import InputSwitch from 'primevue/inputswitch';
 const store = useStore();
 
 const ghosts = computed<Array<IGhost>>(() => (store.getters.ghosts as Array<IGhost>).sort((a, b) => {
-    const aSelectedEvidenceCount = selectedEvidences.value.filter(e => a.evidence.includes(e)).length;
-    const bSelectedEvidenceCount = selectedEvidences.value.filter(e => b.evidence.includes(e)).length;
+    const aCondition = selectedEvidences.value.some(e => !a.evidence.includes(e)) || ruledOutEvidences.value.some(e => a.evidence.includes(e));
+    const bCondition = selectedEvidences.value.some(e => !b.evidence.includes(e)) || ruledOutEvidences.value.some(e => b.evidence.includes(e));
 
-    if (aSelectedEvidenceCount > bSelectedEvidenceCount) {
-        return -1; // Move ghost 'a' up
-    } else if (aSelectedEvidenceCount < bSelectedEvidenceCount) {
-        return 1; // Move ghost 'b' up
+    if (aCondition && !bCondition) {
+        return 1; // Move ghost 'a' up
+    } else if (!aCondition && bCondition) {
+        return -1; // Move ghost 'b' up
     } else {
         // Both ghosts have the same number of selected evidences, sort alphabetically
         return a.name.localeCompare(b.name);
     }
 }));
 
-const ghostsBySelectedEvidence = computed(() => (store.getters.ghosts as Array<IGhost>).filter(g => !selectedEvidences.value.some(e => !g.evidence.includes(e))));
+const ghostsBySelectedEvidence = computed(() => {
+    return (store.getters.ghosts as Array<IGhost>)
+        .filter(g => !selectedEvidences.value.some(e => !g.evidence.includes(e)))
+});
 
 const evidenceNames = computed<EvidenceNames>(() => store.getters.evidenceNames);
 const selectedEvidences = ref<Array<Evidence>>([]);
+const ruledOutEvidences = ref<Array<Evidence>>([]);
+
 const selectedEvidenceChange = (evidence: Evidence) => {
     if (!selectedEvidences.value.includes(evidence)) {
         selectedEvidences.value = [...selectedEvidences.value, evidence];
@@ -136,13 +151,21 @@ const selectedEvidenceChange = (evidence: Evidence) => {
     }
 }
 
+const ruledOutEvidenceChange = (evidence: Evidence) => {
+    if (!ruledOutEvidences.value.includes(evidence)) {
+        ruledOutEvidences.value = [...ruledOutEvidences.value, evidence];
+    } else {
+        ruledOutEvidences.value = ruledOutEvidences.value.filter(e => e !== evidence);
+    }
+}
+
 const selectedGhost = ref<IGhost>(ghosts.value[0]);
 const previousSelectedGhost = ref<IGhost>(selectedGhost.value);
 
-const useCheckIconsForGhostEvidence = ref(true);
+const showParams = computed(() => localStorage.getItem("show_config_params") == "true");
 
 const params = new Map<string, Ref<boolean>>([
-    ["useCheckIconsForGhostEvidence", ref(true)],
+    ["useCheckIconsForGhostEvidence", ref(false)],
 ]);
 
 watch(() => selectedGhost.value, (ghost) => {
@@ -155,7 +178,7 @@ watch(() => selectedGhost.value, (ghost) => {
 
 const ghostTableRowClass = (ghost: IGhost) => {
     return {
-        "evidence-mismatch": selectedEvidences.value.some(e => !ghost.evidence.includes(e)),
+        "evidence-mismatch": selectedEvidences.value.some(e => !ghost.evidence.includes(e)) || ruledOutEvidences.value.some(e => ghost.evidence.includes(e)),
     }
 }
 
