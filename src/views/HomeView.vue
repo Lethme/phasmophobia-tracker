@@ -56,22 +56,49 @@
                 >
                     Reset
                 </Button>
+                <div class="timer flex w-full">
+                    <Button
+                        :icon="{
+                            'pi': true,
+                            'pi-play': !timerState,
+                            'pi-stop': timerState,
+                        }"
+                        aria-label="Submit"
+                        class="flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        @click="timerState = !timerState"
+                    />
+                    <p class="text-2xl font-bold tracking-tight m-0 p-0 ml-3" style="line-height: unset">{{ timerTime }}</p>
+                </div>
             </div>
             <div class="container flex flex-col gap-4 w-full md:w-1/2">
                 <p class="text-4xl font-bold tracking-tight">{{ selectedGhost.name }}</p>
                 <div class="description">
                     <p class="text-1xl tracking-tight" v-for="descLine in selectedGhost.description" :key="descLine">
-                        {{ descLine }}</p>
+                        {{ descLine }}
+                    </p>
                 </div>
                 <p class="text-4xl font-bold tracking-tight">Strength</p>
                 <div class="strength">
-                    <p class="text-1xl tracking-tight" v-for="strengthLine in selectedGhost.strength"
-                       :key="strengthLine">{{ strengthLine }}</p>
+                    <p class="text-1xl tracking-tight" v-for="strengthLine in selectedGhost.strength" :key="strengthLine">
+                        {{ strengthLine }}
+                    </p>
                 </div>
                 <p class="text-4xl font-bold tracking-tight">Weakness</p>
                 <div class="weakness">
                     <p class="text-1xl tracking-tight" v-for="weakLine in selectedGhost.weakness" :key="weakLine">
-                        {{ weakLine }}</p>
+                        {{ weakLine }}
+                    </p>
+                </div>
+                <p class="text-4xl font-bold tracking-tight">Speed</p>
+                <div class="speed">
+                    <p class="text-1xl tracking-tight" v-if="selectedGhost.speed.min === selectedGhost.speed.max">
+                        {{ selectedGhost.speed.min.toPrecision(2) }} m/s
+                    </p>
+                    <p class="text-1xl tracking-tight" v-else>
+                        <span>{{ selectedGhost.speed.min.toPrecision(2) }} m/s</span>
+                        &nbsp;-&nbsp;
+                        <span>{{ selectedGhost.speed.max.toPrecision(2) }} m/s</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -148,11 +175,11 @@ const updateGhostNameSearch = debounce((ghostName: string) => {
     ghostNameSearch.value = ghostName;
 }, 300);
 
-const showParams = computed(() => localStorage.getItem("tracker:show_config_params") == "true");
+const showParams = computed(() => localStorage.getItem("phasmotracker:show_config_params") == "true");
 
 const params = new Map<string, Ref<boolean>>([
-    ["useCheckIconsForGhostEvidence", ref(localStorage.getItem("tracker:useCheckIconsForGhostEvidence") == "true")],
-    ["sortGhostsByEvidenceMatch", ref(localStorage.getItem("tracker:sortGhostsByEvidenceMatch") == "true")],
+    ["useCheckIconsForGhostEvidence", ref(localStorage.getItem("phasmotracker:useCheckIconsForGhostEvidence") == "true")],
+    ["sortGhostsByEvidenceMatch", ref(localStorage.getItem("phasmotracker:sortGhostsByEvidenceMatch") == "true")],
 ]);
 
 for (const [key, param] of params.entries()) {
@@ -230,6 +257,45 @@ const evidenceTableRowClass = (evidence: Evidence) => {
         "evidence-mismatch": ghostsBySelectedEvidence.value.length && ghostsBySelectedEvidence.value.every(g => !g.evidence.includes(+evidence))
     }
 }
+
+function formatTimeUnits(unit: number) {
+    return unit < 10 ? '0' + unit : unit;
+}
+
+function getFormattedTime(duration: number) {
+    const hours = formatTimeUnits(Math.floor(duration / 3600));
+    const minutes = formatTimeUnits(Math.floor((duration % 3600) / 60));
+    const seconds = formatTimeUnits(Math.round(duration % 60)); // Round seconds to the nearest integer
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+function calculateTimeDifference(startDate: Date, endDate: Date) {
+    const diffInSeconds = Math.abs((endDate.getTime() - startDate.getTime()) / 1000);
+    return getFormattedTime(diffInSeconds);
+}
+
+const timerState = ref(false);
+const timerIntervalId = ref<number | null>(null);
+const timerTimestamp = ref<Date | null>(null);
+const timerTime = ref("00:00:00");
+
+const startTimer = async () => {
+    timerTimestamp.value = new Date();
+    timerTime.value = "00:00:00";
+    timerIntervalId.value = setInterval(() => {
+        timerTime.value = calculateTimeDifference(timerTimestamp.value!, new Date())
+    }, 1000);
+}
+
+const stopTimer = async () => {
+    if (timerIntervalId.value) {
+        timerTimestamp.value = null;
+        clearInterval(timerIntervalId.value);
+    }
+}
+
+watch(() => timerState.value, (state) => state ? startTimer() : stopTimer());
 
 const log = console.log;
 </script>

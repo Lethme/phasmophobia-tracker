@@ -17,6 +17,10 @@ const state: State = {
 			strength: [],
 			weakness: ["Smudge Sticks to stop it from attacking for a long period of time."],
 			evidence: [Evidence.SpiritBox, Evidence.GhostWriting, Evidence.EMF5],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			}
 		},
 		{
 			name: "Wraith",
@@ -27,6 +31,10 @@ const state: State = {
 			strength: ["They never touch the ground, so they can’t be tracked by footsteps."],
 			weakness: ["Wraiths have a toxic reaction to salt."],
 			evidence: [Evidence.SpiritBox, Evidence.EMF5, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Phantom",
@@ -37,6 +45,10 @@ const state: State = {
 			strength: ["If you look at a phantom directly your sanity will drop faster."],
 			weakness: ["You can take a picture of the phantom to make it disappear."],
 			evidence: [Evidence.SpiritBox, Evidence.Fingerprints, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Poltergeist",
@@ -46,6 +58,10 @@ const state: State = {
 			strength: ["Throw a huge amount of objects at once."],
 			weakness: ["Ineffective in an empty room as there will no objects to toss around."],
 			evidence: [Evidence.SpiritBox, Evidence.Fingerprints, Evidence.GhostWriting],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Banshee",
@@ -56,6 +72,10 @@ const state: State = {
 			strength: ["Will target one person at a time."],
 			weakness: ["Fears crucifix and will be less aggressive near one."],
 			evidence: [Evidence.Fingerprints, Evidence.GhostOrbs, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Jinn",
@@ -66,6 +86,10 @@ const state: State = {
 			strength: ["Will travel faster if the victim is far away."],
 			weakness: ["Turning off the location’s power source will prevent Jinn from using its ability."],
 			evidence: [Evidence.Fingerprints, Evidence.FreezingTemperature, Evidence.EMF5],
+			speed: {
+				min: 1.7,
+				max: 2.5,
+			},
 		},
 		{
 			name: "Mare",
@@ -75,6 +99,10 @@ const state: State = {
 			strength: ["Increased chance to attack in the dark."],
 			weakness: ["Turning the lights on around the Mare will lower its chance to attack."],
 			evidence: [Evidence.SpiritBox, Evidence.GhostWriting, Evidence.GhostOrbs],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Revenant",
@@ -85,6 +113,10 @@ const state: State = {
 			strength: ["Travels faster while hunting."],
 			weakness: ["If you are hidden from the Revenant, their speed drops, and they travel slowly."],
 			evidence: [Evidence.GhostWriting, Evidence.FreezingTemperature, Evidence.GhostOrbs],
+			speed: {
+				min: 1.0,
+				max: 3.0,
+			},
 		},
 		{
 			name: "Shade",
@@ -94,6 +126,10 @@ const state: State = {
 			strength: ["Harder to find."],
 			weakness: ["Won't fall into the hunting mode if there are multiple people nearby."],
 			evidence: [Evidence.GhostWriting, Evidence.FreezingTemperature, Evidence.EMF5],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Demon",
@@ -104,6 +140,10 @@ const state: State = {
 			strength: ["Attacks more often than any other ghost."],
 			weakness: ["Asking a successful question on the Ouija board won’t lower sanity."],
 			evidence: [Evidence.Fingerprints, Evidence.GhostWriting, Evidence.FreezingTemperature],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Yurei",
@@ -113,6 +153,10 @@ const state: State = {
 			strength: ["Stronger effect on people’s sanity."],
 			weakness: ["Smudging the Yurei room will cause it to not wander around the location for a long time."],
 			evidence: [Evidence.FreezingTemperature, Evidence.GhostOrbs, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Oni",
@@ -123,6 +167,10 @@ const state: State = {
 			strength: ["More active when players are nearby or when objects move at great speed."],
 			weakness: ["Being more active helps players to easily identify the Oni."],
 			evidence: [Evidence.FreezingTemperature, Evidence.EMF5, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Yokai",
@@ -133,6 +181,10 @@ const state: State = {
 			strength: ["Talking near a Yokai will anger it and increase it's chance of attacking."],
 			weakness: ["When hunting a Yokai can only hear voices close to it."],
 			evidence: [Evidence.SpiritBox, Evidence.GhostOrbs, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Hantu",
@@ -143,6 +195,10 @@ const state: State = {
 			strength: ["Lower temperatures can cause the Hantu to move at faster speeds."],
 			weakness: ["A Hantu will move slower in warmer areas."],
 			evidence: [Evidence.Fingerprints, Evidence.FreezingTemperature, Evidence.GhostOrbs],
+			speed: {
+				min: 1.44,
+				max: 2.7,
+			},
 		},
 		{
 			name: "Goryo",
@@ -152,6 +208,10 @@ const state: State = {
 			strength: ["A Goryo will usually only show itself on camera if there are no people nearby."],
 			weakness: ["They are rarely seen far from their place of death."],
 			evidence: [Evidence.Fingerprints, Evidence.EMF5, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Myling",
@@ -162,6 +222,10 @@ const state: State = {
 			strength: ["A Myling is known to be quieter when hunting."],
 			weakness: ["Mylings more frequently make paranormal sounds."],
 			evidence: [Evidence.Fingerprints, Evidence.GhostWriting, Evidence.EMF5],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "The Twins",
@@ -172,6 +236,10 @@ const state: State = {
 			strength: ["Either Twin can be angered and initiate an attack on their prey."],
 			weakness: ["The Twins will often interact with the environment at the same time."],
 			evidence: [Evidence.SpiritBox, Evidence.FreezingTemperature, Evidence.EMF5],
+			speed: {
+				min: 1.53,
+				max: 1.87,
+			},
 		},
 		{
 			name: "Onryo",
@@ -183,6 +251,10 @@ const state: State = {
 			strength: ["Extinguishing a flame can cause an Onryo to attack."],
 			weakness: ["When threatened, this ghost will be less likely to hunt."],
 			evidence: [Evidence.SpiritBox, Evidence.FreezingTemperature, Evidence.GhostOrbs],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Obake",
@@ -193,6 +265,10 @@ const state: State = {
 			strength: ["While interacting with the environment, Obake will rarely leave a trace."],
 			weakness: ["Sometimes this ghost will shapeshift, leaving behind unique evidence."],
 			evidence: [Evidence.Fingerprints, Evidence.EMF5, Evidence.GhostOrbs],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Raiju",
@@ -203,6 +279,10 @@ const state: State = {
 			strength: ["A Raiju can siphon power from nearby electrical devices, making it move faster."],
 			weakness: ["Raiju are constantly disrupting electronic equipment, making it easier to track when attacking."],
 			evidence: [Evidence.EMF5, Evidence.GhostOrbs, Evidence.DOTS],
+			speed: {
+				min: 1.7,
+				max: 2.5,
+			},
 		},
 		{
 			name: "The Mimic",
@@ -212,6 +292,10 @@ const state: State = {
 			strength: ["We're unsure what this ghost is capable of. Be careful."],
 			weakness: ["Several reports have noted ghost orb sightings near mimics."],
 			evidence: [Evidence.SpiritBox, Evidence.Fingerprints, Evidence.FreezingTemperature],
+			speed: {
+				min: 1.7,
+				max: 1.7,
+			},
 		},
 		{
 			name: "Moroi",
@@ -222,6 +306,10 @@ const state: State = {
 			strength: ["Moves noticeably faster at low player sanity."],
 			weakness: ["Smudge sticks blind the ghost for longer during hunts."],
 			evidence: [Evidence.SpiritBox, Evidence.GhostWriting, Evidence.FreezingTemperature],
+			speed: {
+				min: 1.5,
+				max: 3.71,
+			},
 		},
 		{
 			name: "Deogen",
@@ -235,6 +323,10 @@ const state: State = {
 			],
 			weakness: ["Significantly slows down when near the player."],
 			evidence: [Evidence.SpiritBox, Evidence.GhostWriting, Evidence.DOTS],
+			speed: {
+				min: 0.4,
+				max: 3.0,
+			},
 		},
 		{
 			name: "Thaye",
@@ -245,6 +337,10 @@ const state: State = {
 			strength: ["Entering the location makes it active, defensive and agile."],
 			weakness: ["Becomes slower and less active overtime."],
 			evidence: [Evidence.GhostWriting, Evidence.GhostOrbs, Evidence.DOTS],
+			speed: {
+				min: 1.0,
+				max: 2.75,
+			},
 		},
 	].sort((a: IGhost, b: IGhost) => {
 		if (a.name < b.name) {

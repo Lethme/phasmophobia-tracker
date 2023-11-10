@@ -6,6 +6,10 @@ interface IGhost {
 	strength: Array<string>;
 	weakness: Array<string>;
 	evidence: Array<Evidence>;
+	speed: {
+		min: number,
+		max: number,
+	},
 }
 
 export default IGhost;

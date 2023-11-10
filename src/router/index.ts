@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/HomeView.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -7,6 +7,11 @@ const routes: Array<RouteRecordRaw> = [
 		name: 'home',
 		component: HomeView
 	},
+	{
+		path: '/enable-config',
+		name: 'enable_config',
+		component: () => import('../views/EnableConfigView.vue'),
+	}
 ]
 
 const router = createRouter({
